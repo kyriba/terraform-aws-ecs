@@ -139,7 +139,7 @@ resource "aws_launch_configuration" "instance" {
   key_name             = "${var.instance_keypair != "" ? var.instance_keypair : element(concat(aws_key_pair.user.*.key_name, list("")), 0)}"
 
   root_block_device {
-    volume_size = "${var.instance_root_volume_size}"
+    volume_size = var.instance_root_volume_size
     volume_type = "gp2"
   }
 
@@ -151,11 +151,11 @@ resource "aws_launch_configuration" "instance" {
 resource "aws_autoscaling_group" "asg" {
   name = "${var.name}-asg"
 
-  launch_configuration = "${aws_launch_configuration.instance.name}"
-  vpc_zone_identifier  = ["${var.vpc_subnets}"]
-  max_size             = "${var.asg_max_size}"
-  min_size             = "${var.asg_min_size}"
-  desired_capacity     = "${var.asg_desired_size}"
+  launch_configuration = aws_launch_configuration.instance.name
+  vpc_zone_identifier  = var.vpc_subnets
+  max_size             = var.asg_max_size
+  min_size             = var.asg_min_size
+  desired_capacity     = var.asg_desired_size
 
   health_check_grace_period = 300
   health_check_type         = "EC2"
